@@ -11,12 +11,16 @@ import 'package:sample/presentation/block/image_picker/image_picker_bloc.dart';
 import 'package:sample/presentation/pages/Security.dart';
 import 'package:sample/presentation/pages/addCard_page.dart';
 
+import '../block/ListData/dataList_bloc.dart';
+
 class DashBoardPage extends StatelessWidget {
   bool imageHolder = false;
   File _image;
 
   @override
   Widget build(BuildContext context) {
+    final dataBloc = BlocProvider.of<DataListBloc>(context);
+    dataBloc.add(AddDataEvent(null));
     List<CardModel> list;
     return Scaffold(
         // backgroundColor: Colors.,
@@ -109,51 +113,57 @@ class DashBoardPage extends StatelessWidget {
                   " Saved Cards",
                   style: TextStyle(fontSize: 20, color: Colors.blue),
                 ),
-                // BlocListener(
-                //   cubit: BlocProvider.of<DataListBloc>(context),
-                //   listener: (context, state) {
-                //     if (state is AddDataState) {
-                //       list = state.cards;
-                //       print(list.last.expiry);
-                //     }
-                //     if (state is NoDataState) {
-                //       print(
-                //           "-------------------------------------------------------------No data State");
-                //     }
-                //   },
                 BlocBuilder<DataListBloc, DataListState>(
-                    cubit: BlocProvider.of<DataListBloc>(context),
+                    //cubit: BlocProvider.of<DataListBloc>(context),
                     builder: (context, state) {
-                      final dataBloc = BlocProvider.of<DataListBloc>(context);
-                      // print(list.last.expiry + "");
-                      if (state is NoDataState) {
-                        print("object");
-                        dataBloc.add(InitialDataEvent());
-                      }
+                  final dataBloc = BlocProvider.of<DataListBloc>(context);
+                  // print(list.last.expiry + "");
+                  if (state is NoDataState) {
+                    print("object");
+                    dataBloc.add(InitialDataEvent());
+                  }
 
-                      return ListView.builder(
+                  return state is InitialDataState && state.cards.length == 0
+                      ? Text(
+                          " No cards available ",
+                          style: TextStyle(color: Colors.red),
+                        )
+                      : ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: dataBloc.getCardList().length,
+                          itemCount: state is InitialDataState
+                              ? state.cards.length
+                              : 0,
                           itemBuilder: (context, index) => Stack(
+                                overflow: Overflow.visible,
                                 children: [
+                                  state is InitialDataState
+                                      ? CardModel(
+                                          state.cards[index].name,
+                                          state.cards[index].card,
+                                          state.cards[index].number,
+                                          state.cards[index].expiry)
+                                      : Container(),
                                   Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: IconButton(
-                                          icon: Icon(Icons.clear),
-                                          onPressed: () {
+                                    right: 0,
+                                    top: 0,
+                                    child: IconButton(
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          if (state is InitialDataState) {
+                                            print(
+                                                "event is pressed delete+ state.cards[index].name}");
                                             dataBloc.add(DeleteDataEvent(
-                                                dataBloc.getCardList()[index]));
-                                          })),
-                                  new CardModel(
-                                      dataBloc.getCardList()[index].name,
-                                      dataBloc.getCardList()[index].card,
-                                      dataBloc.getCardList()[index].number,
-                                      dataBloc.getCardList()[index].expiry),
+                                                state.cards[index]));
+                                          }
+                                        }),
+                                  )
                                 ],
                               ));
-                    }),
+                }),
 
                 SizedBox(
                   height: 20,
@@ -165,10 +175,8 @@ class DashBoardPage extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                BlocProvider<DataListBloc>(
-                  create: (BuildContext context) => DataListBloc(),
-                  child: AddCardPage(),
-                )
+
+                AddCardPage(),
 
                 // savedCards(context),
               ],
@@ -216,7 +224,7 @@ class DashBoardPage extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.photo_album_sharp,
+                          Icons.photo_album,
                           size: 40,
                         ),
                         Text("Choose from gallery",

@@ -114,7 +114,7 @@ class _SecurityPageState extends State<SecurityPage> {
                 hintText: "Name",
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32.0))),
-            keyboardType: TextInputType.name,
+            //keyboardType: TextInputType.name,
             validator: (String value) {
               if (value.isEmpty) {
                 return 'Name is Required';

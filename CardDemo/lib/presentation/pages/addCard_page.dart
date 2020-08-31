@@ -52,10 +52,7 @@ class _AddCardPageState extends State<AddCardPage> {
             SizedBox(
               height: 25.0,
             ),
-            BlocProvider<DataListBloc>(
-              create: (BuildContext context) => DataListBloc(),
-              child: saveButton(),
-            )
+            saveButton(),
           ],
         ),
       ),
@@ -63,55 +60,50 @@ class _AddCardPageState extends State<AddCardPage> {
   }
 
   Widget saveButton() {
-    return BlocListener(
-        cubit: BlocProvider.of<DataListBloc>(context),
+    return BlocListener<DataListBloc, DataListState>(
         listener: (context, state) {},
-        child: BlocBuilder<DataListBloc, DataListState>(
-            cubit: BlocProvider.of<DataListBloc>(context),
-            builder: (context, state) {
-              final dataBloc = BlocProvider.of<DataListBloc>(context);
-              return Material(
-                elevation: 5.0,
-                borderRadius: BorderRadius.circular(30.0),
-                color: Colors.green,
-                child: MaterialButton(
-                  minWidth: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                  onPressed: () {
-                    if (!_formKey.currentState.validate()) {
-                      Fluttertoast.showToast(
-                          msg: "Field must be Validated",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          fontSize: 16.0);
-                      return;
-                    }
+        child:
+            BlocBuilder<DataListBloc, DataListState>(builder: (context, state) {
+          final dataBloc = BlocProvider.of<DataListBloc>(context);
+          return Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(30.0),
+            color: Colors.green,
+            child: MaterialButton(
+              minWidth: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              onPressed: () {
+                if (!_formKey.currentState.validate()) {
+                  Fluttertoast.showToast(
+                      msg: "Field must be Validated",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0);
+                  return;
+                }
 
-                    _formKey.currentState.save();
-                    dataBloc.add(AddDataEvent(CardModel(
-                        nameController.text,
-                        cardController.text,
-                        numberController.text,
-                        dateSelected)));
-                    Fluttertoast.showToast(
-                        msg: "New Card Created",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
-                  },
-                  child: Text("Add Card",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              );
-            }));
+                _formKey.currentState.save();
+                dataBloc.add(AddDataEvent(CardModel(nameController.text,
+                    cardController.text, numberController.text, dateSelected)));
+                Fluttertoast.showToast(
+                    msg: "New Card Created",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.green,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              },
+              child: Text("Add Card",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          );
+        }));
   }
 
   Widget _buildName(context) {
@@ -129,7 +121,7 @@ class _AddCardPageState extends State<AddCardPage> {
                 hintText: "Card Holder",
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32.0))),
-            keyboardType: TextInputType.name,
+            //keyboardType: TextInputType.name,
             validator: (String value) {
               if (value.isEmpty) {
                 return 'Name is Required';
@@ -161,7 +153,7 @@ class _AddCardPageState extends State<AddCardPage> {
                 hintText: "Name of Card",
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(32.0))),
-            keyboardType: TextInputType.name,
+            //keyboardType: TextInputType.name,
             validator: (String value) {
               if (value.isEmpty) {
                 return 'Card Name is Required';

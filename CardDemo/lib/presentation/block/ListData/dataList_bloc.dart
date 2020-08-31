@@ -19,14 +19,19 @@ class DataListBloc extends Bloc<DataListEvent, DataListState> {
     if (event is NoDataEvent) yield NoDataState();
     if (event is InitialDataEvent) yield InitialDataState(_cardList);
     if (event is AddDataEvent) {
-      _cardList.add(event.cardModel);
-      print("data Added+ ${_cardList.length}");
-      print(_cardList.last.name);
+      if (event.cardModel != null) {
+        _cardList.add(event.cardModel);
+        // print("data Added+ ${_cardList.length}");
+      }
+
       yield AddDataState(_cardList);
+      yield InitialDataState(_cardList);
     }
     if (event is DeleteDataEvent) {
+      print("${event.cardModel.name}+ dtcfgyfgh");
       _cardList.remove(event.cardModel);
       yield DeleteDataState();
+      yield InitialDataState(_cardList);
     }
   }
 
